@@ -44,7 +44,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       sameSite: "none",
-      secure: true,
+      secure: false,
       httpOnly: false,
     },
   })
