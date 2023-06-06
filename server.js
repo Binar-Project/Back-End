@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize");
+const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
 const dashboardRoutes = require("./routes/dashboardRoute");
@@ -30,6 +31,7 @@ app.use(
   })
 );
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/assets", express.static("assets"));
@@ -39,10 +41,10 @@ app.use(
     secret: process.env.SESS_SECRET,
     resave: false,
     store: store,
-    sameSite: "none",
     saveUninitialized: false,
     cookie: {
-      secure: false,
+      sameSite: "none",
+      secure: true,
       httpOnly: false,
     },
   })
