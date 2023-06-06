@@ -36,9 +36,12 @@ const authController = {
 
   Dashboard: async (req, res) => {
     try {
-      const cookieValue = req.cookies["connect.sid"];
-      if (!cookieValue) {
-        return res.status(401).json({ message: "Mohon login ke akun Anda" });
+      const cookie = req.cookies["connect.sid"];
+      if (cookie) {
+        return res.status(200).json({ message: "Anda sudah login" });
+      }
+      if (!cookie) {
+        return res.status(404).json({ message: "Anda belum login" });
       }
 
       const user = await User.findOne({
