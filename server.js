@@ -21,8 +21,8 @@ const store = new sessionStore({
 app.use(morgan("dev"));
 app.use(
   cors({
+    origin: "https://ventus.up.railway.app/",
     credentials: true,
-    origin: "*",
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: "Content-Type, Authorization",
   })
