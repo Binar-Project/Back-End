@@ -37,7 +37,6 @@ const authController = {
     if (!req.session.userId) {
       return res.status(401).json({ message: "Mohon Login ke akun anda" });
     }
-    next();
 
     const user = await User.findOne({
       attributes: ["id_user", "username", "email", "role"],
@@ -48,6 +47,7 @@ const authController = {
     if (!user) {
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
+    next();
     res.status(200).json(user);
   },
 
