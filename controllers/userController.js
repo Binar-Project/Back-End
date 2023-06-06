@@ -5,12 +5,16 @@ const userController = {
   // GET ALL USERS
   getAllUsers: async (req, res) => {
     try {
-      const response = await User.findAll({
-        attributes: ["id_user", "username", "email"],
-      });
+      let response;
+      if (req.role === "admin") {
+        response = await User.findAll({
+          attributes: ["id_user", "username", "email", "role"],
+        });
+      } else {
+        return res.status(403).json({ message: "Anda tidak memiliki akses" });
+      }
       res.status(201).json(response);
     } catch (error) {
-      console.error(error);
       res.status(500).json({ message: "Server error" });
     }
   },
@@ -18,7 +22,7 @@ const userController = {
   getUserById: async (req, res) => {
     try {
       const response = await User.findOne({
-        attributes: ["id_user", "username", "email"],
+        attributes: ["id_user", "username", "email", "role"],
         where: {
           id_user: req.params.id,
         },
@@ -37,12 +41,34 @@ const userController = {
   // CREATE USER
   createUser: async (req, res) => {
     const { username, email, password, confirmPassword } = req.body;
+    if (username.length < 6) {
+      return res.status(400).json({ message: "Username minimal 6 karakter" });
+    }
+
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Password tidak sama" });
     }
 
+    if (username == username.username) {
+      return res.status(400).json({ message: "Username sudah digunakan" });
+    }
+
+    const checkDuplicate = async (field, value) => {
+      const existingUser = await User.findOne({
+        where: {
+          [field]: value,
+        },
+      });
+      if (existingUser) {
+        throw new Error(`${field} sudah digunakan`);
+      }
+    };
+
     const hashedPassword = await argon2.hash(password);
     try {
+      await checkDuplicate("username", username);
+      await checkDuplicate("email", email);
+
       await User.create({
         username: username,
         email: email,
@@ -51,7 +77,7 @@ const userController = {
       res.status(201).json({ message: "Registrasi berhasil" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -76,7 +102,7 @@ const userController = {
     }
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Password tidak sama" });
+      return res.status(400 ).json({ message: "Password tidak sama" });
     }
 
     try {

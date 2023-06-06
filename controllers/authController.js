@@ -11,7 +11,9 @@ const authController = {
         },
       });
       if (!user) {
-        return res.status(400).json({ message: "User tidak ditemukan" });
+        return res
+          .status(404)
+          .json({ message: "Email yang Anda masukkan salah" });
       }
       // validate password
       const match = await argon2.verify(user.password, req.body.password);
@@ -23,7 +25,8 @@ const authController = {
       const id_user = user.id_user;
       const username = user.username;
       const email = user.email;
-      res.status(200).json({ id_user, username, email });
+      const role = user.role;
+      res.status(200).json({ id_user, username, email, role });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error" });
@@ -35,9 +38,7 @@ const authController = {
       return res.status(401).json({ message: "Mohon Login ke akun anda" });
     }
     const user = await User.findOne({
-      attributes: {
-        exclude: ["password"],
-      },
+      attributes: ["id_user", "username", "email", "role"],
       where: {
         id_user: req.session.userId,
       },

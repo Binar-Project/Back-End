@@ -11,7 +11,7 @@ const Event = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: true,
-      }, 
+      },
     },
     title: {
       type: DataTypes.STRING,
@@ -25,9 +25,9 @@ const Event = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
       get() {
-        const image = this.getDataValue("image");
+        const image = this.getDataValue("img");
         return "/img/" + image;
-      }
+      },
     },
     date: {
       type: DataTypes.DATEONLY,
@@ -54,19 +54,12 @@ const Event = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: true,
-      }
+      },
     },
     link_registration: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    user_id:{
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      }
-    }
   },
   {
     freezeTableName: true,
@@ -75,7 +68,7 @@ const Event = sequelize.define(
   }
 );
 
-Users.hasMany(Event)
-Event.belongsTo(Users, {foreignKey: "user_id"})
+Users.hasMany(Event);
+Event.belongsTo(Users);
 
 module.exports = Event;
