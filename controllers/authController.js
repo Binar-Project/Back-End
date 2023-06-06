@@ -37,6 +37,7 @@ const authController = {
   Dashboard: async (req, res) => {
     try {
       const user = await User.findOne({
+        attributes: ["id_user", "username", "email", "role"],
         where: {
           id_user: req.session.userId,
         },
@@ -47,7 +48,7 @@ const authController = {
       res.status(200).json({ user });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: "Mohon login ke akun Anda" });
     }
   },
 
