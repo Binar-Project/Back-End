@@ -33,10 +33,12 @@ const authController = {
     }
   },
 
-  Dashboard: async (req, res) => {
+  Dashboard: async (req, res, next) => {
     if (!req.session.userId) {
       return res.status(401).json({ message: "Mohon Login ke akun anda" });
     }
+    next();
+
     const user = await User.findOne({
       attributes: ["id_user", "username", "email", "role"],
       where: {

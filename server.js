@@ -19,10 +19,13 @@ const store = new sessionStore({
 });
 
 app.use(morgan("dev"));
+
 app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: "Content-Type, Authorization",
   })
 );
 app.use(bodyParser.json());
