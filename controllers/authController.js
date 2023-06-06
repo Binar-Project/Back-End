@@ -20,13 +20,16 @@ const authController = {
       if (!match) {
         return res.status(400).json({ message: "Password salah" });
       }
+      
       // set session
-
       req.session.userId = user.id_user;
       const id_user = user.id_user;
       const username = user.username;
       const email = user.email;
       const role = user.role;
+
+      req.session.save();
+
       res.status(200).json({ id_user, username, email, role });
     } catch (error) {
       console.error(error);
@@ -36,10 +39,16 @@ const authController = {
 
   Dashboard: async (req, res) => {
     try {
+      const userId = req.session.userId;
+
+      if (!userId) {
+        return res.status(401).json({ message: "Mohon login ke akun Anda" });
+      }
+
       const user = await User.findOne({
         attributes: ["id_user", "username", "email", "role"],
         where: {
-          id_user: req.session.userId,
+          id_user: userId,
         },
       });
       if (!user) {
