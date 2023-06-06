@@ -34,27 +34,22 @@ const authController = {
   },
 
   Dashboard: async (req, res) => {
-    // if (!req.session.userId) {
-    //   return res.status(401).json({ message: "Mohon Login ke akun anda" });
-    // }
     if (req.session && req.session.userId) {
       // Cookie tersedia, lakukan tindakan yang diperlukan
-      res.status(200).json({ message: "Cookie tersedia" });
+      const user = await User.findOne({
+        attributes: ["id_user", "username", "email", "role"],
+        where: {
+          id_user: req.session.userId,
+        },
+      });
+      if (!user) {
+        return res.status(404).json({ message: "User tidak ditemukan" });
+      }
+      res.status(200).json(user);
     } else {
       // Cookie tidak tersedia, berikan respons atau tindakan lain yang sesuai
-      res.status(401).json({ message: "Cookie tidak tersedia" });
+      res.status(401).json({ message: "Mohon Login ke akun anda" });
     }
-
-    const user = await User.findOne({
-      attributes: ["id_user", "username", "email", "role"],
-      where: {
-        id_user: req.session.userId,
-      },
-    });
-    if (!user) {
-      return res.status(404).json({ message: "User tidak ditemukan" });
-    }
-    res.status(200).json(user);
   },
 
   Logout: async (req, res) => {
