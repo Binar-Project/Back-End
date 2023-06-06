@@ -18,7 +18,7 @@ const upload = multer({ storage: storage });
 
 router.get("/", verifyUser, dashboard.getAllEvents);
 router.get("/:id", verifyUser, dashboard.getEventById);
-router.post("/", upload.single("img"), verifyUser, dashboard.createEvent);
+router.post("/", upload.single("file"), verifyUser, dashboard.createEvent);
 router.patch("/:id", verifyUser, dashboard.updateEvent);
 router.delete("/:id", verifyUser, dashboard.deleteEvent);
 
