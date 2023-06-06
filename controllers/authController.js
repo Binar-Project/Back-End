@@ -22,7 +22,7 @@ const authController = {
       }
       // set session
 
-      req.session.userId = await user.id_user;
+      req.session.userId = user.id_user;
       const id_user = user.id_user;
       const username = user.username;
       const email = user.email;
@@ -30,13 +30,12 @@ const authController = {
       res.status(200).json({ id_user, username, email, role });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: "Gagal melakukan login" });
     }
   },
 
   Dashboard: async (req, res) => {
     try {
-      console.log(req.session.userId);
       const user = await User.findOne({
         attributes: ["id_user", "username", "email", "role"],
         where: {
