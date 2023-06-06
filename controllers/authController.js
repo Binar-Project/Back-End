@@ -35,29 +35,19 @@ const authController = {
   },
 
   Dashboard: async (req, res) => {
-    if (req.session && req.session.userId) {
-      // Cookie tersedia dan pengguna telah terotentikasi
-      const userId = req.session.userId;
-
-      // Lakukan logika pengambilan data pengguna dari database
-      // Contoh pengambilan data pengguna dengan memanfaatkan model User
-      User.findOne({ _id: userId })
-        .then((user) => {
-          if (!user) {
-            return res
-              .status(404)
-              .json({ message: "Pengguna tidak ditemukan" });
-          }
-          res.status(200).json(user);
-        })
-        .catch((error) => {
-          res.status(500).json({ message: "Terjadi kesalahan pada server" });
-        });
-    } else {
-      // Cookie tidak tersedia atau pengguna belum terotentikasi
-      res
-        .status(401)
-        .json({ message: "Mohon login untuk mengakses dashboard" });
+    try {
+      const user = await User.findOne({
+        where: {
+          id_user: "98cf5357-9c28-486f-abe8-3c39b592992f",
+        },
+      });
+      if (!user) {
+        return res.status(404).json({ message: "User tidak ditemukan" });
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
     }
   },
 
