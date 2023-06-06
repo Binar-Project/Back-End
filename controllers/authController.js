@@ -34,9 +34,15 @@ const authController = {
   },
 
   Dashboard: async (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ message: "Mohon Login ke akun anda" });
-    }
+    // if (!req.session.userId) {
+    //   return res.status(401).json({ message: "Mohon Login ke akun anda" });
+    // }
+    if (req.session && req.session.userId) {
+      // Cookie tersedia, lakukan tindakan yang diperlukan
+      res.status(200).json({ message: "Cookie tersedia" });
+    } else {
+      // Cookie tidak tersedia, berikan respons atau tindakan lain yang sesuai
+      res.status(401).json({ message: "Cookie tidak tersedia" });
 
     const user = await User.findOne({
       attributes: ["id_user", "username", "email", "role"],
