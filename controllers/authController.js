@@ -37,8 +37,9 @@ const authController = {
   Dashboard: async (req, res) => {
     try {
       const user = await User.findOne({
+        attributes: ["id_user", "username", "email", "role"],
         where: {
-          id_user: "98cf5357-9c28-486f-abe8-3c39b592992f",
+          id_user: req.session.userId,
         },
       });
       if (!user) {
