@@ -24,10 +24,12 @@ app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
+    exposedHeaders: "Set-Cookie",
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: "Content-Type, Authorization",
   })
 );
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/assets", express.static("assets"));
@@ -39,8 +41,8 @@ app.use(
     store: store,
     saveUninitialized: false,
     cookie: {
-      secure: "false",
-      httpOnly: "false",
+      secure: false,
+      httpOnly: false,
     },
   })
 );

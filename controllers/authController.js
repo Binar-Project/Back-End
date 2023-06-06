@@ -35,21 +35,15 @@ const authController = {
   },
 
   Dashboard: async (req, res) => {
-    try {
-      const user = await User.findOne({
-        attributes: ["id_user", "username", "email", "role"],
-        where: {
-          id_user: req.session.userId,
-        },
-      });
-      if (!user) {
-        return res.status(404).json({ message: "User tidak ditemukan" });
-      }
-      res.status(200).json(user);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error" });
+    if (!req.session.userId) {
+      return res.status(401).json({ message: "Mohon Login ke akun anda" });
     }
+
+    // Dapatkan informasi pengguna dari sesi
+    const user = await User.findById(req.session.userId);
+
+    // Kirim informasi pengguna ke klien
+    res.status(200).json(user);
   },
 
   Logout: async (req, res) => {
