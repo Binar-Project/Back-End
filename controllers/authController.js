@@ -45,7 +45,7 @@ const authController = {
       if (!user) {
         return res.status(404).json({ message: "User tidak ditemukan" });
       }
-      res.status(200).json({ user });
+      res.status(200).json(user);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Mohon login ke akun Anda" });
