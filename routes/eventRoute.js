@@ -1,11 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const eventController = require('../controllers/eventController');
+const eventController = require("../controllers/eventController");
+const multer = require("multer");
 
-router.get('/', eventController.getAllEvents);
-router.get('/:id', eventController.getEventById);
-router.post('/', eventController.createEvent);
-router.put('/:id', eventController.updateEvent);
-router.delete('/:id', eventController.deleteEvent);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./assets/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+router.get("/", eventController.getAllEventsGuest);
+router.get("/:id", eventController.getEventByIdGuest);
+router.get("/search", eventController.searchEventsGuest);
 
 module.exports = router;

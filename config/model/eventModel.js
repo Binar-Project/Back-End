@@ -1,14 +1,17 @@
 const { DataTypes } = require("sequelize");
-const { v4: uuidv4 } = require("uuid");
 const sequelize = require("../database/database");
+const Users = require("./userModel");
 
 const Event = sequelize.define(
   "Event",
   {
     id_event: {
-      type: DataTypes.UUID,
+      type: DataTypes.STRING,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
     title: {
       type: DataTypes.STRING,
@@ -21,6 +24,10 @@ const Event = sequelize.define(
     img: {
       type: DataTypes.STRING,
       allowNull: true,
+      get() {
+        const image = this.getDataValue("img");
+        return "/img/" + image;
+      },
     },
     date: {
       type: DataTypes.DATEONLY,
@@ -44,7 +51,10 @@ const Event = sequelize.define(
     },
     price: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
     link_registration: {
       type: DataTypes.STRING,
@@ -52,9 +62,13 @@ const Event = sequelize.define(
     },
   },
   {
+    freezeTableName: true,
     tableName: "Events",
     timestamps: false,
   }
 );
+
+Users.hasMany(Event);
+Event.belongsTo(Users);
 
 module.exports = Event;
