@@ -21,13 +21,13 @@ sequelize
     console.error("Error connecting to MySQL:", error);
   });
 
-// (async () => {
-//   try {
-//     await sequelize.sync();
-//     console.log("All models were synchronized successfully.");
-//   } catch (error) {
-//     console.error("Error synchronizing models:", error);
-//   }
-// })();
+(async () => {
+  try {
+    await sequelize.sync();
+    console.log("All models were synchronized successfully.");
+  } catch (error) {
+    console.error("Error synchronizing models:", error);
+  }
+})();
 
 module.exports = sequelize;
