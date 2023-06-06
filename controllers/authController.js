@@ -36,14 +36,6 @@ const authController = {
 
   Dashboard: async (req, res) => {
     try {
-      const cookie = req.cookies["connect.sid"];
-      if (cookie) {
-        return res.status(200).json({ message: "Anda sudah login" });
-      }
-      if (!cookie) {
-        return res.status(404).json({ message: "Anda belum login" });
-      }
-
       const user = await User.findOne({
         attributes: ["id_user", "username", "email", "role"],
         where: {
