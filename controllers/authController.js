@@ -33,7 +33,7 @@ const authController = {
     }
   },
 
-  Dashboard: async (req, res, next) => {
+  Dashboard: async (req, res) => {
     if (!req.session.userId) {
       return res.status(401).json({ message: "Mohon Login ke akun anda" });
     }
@@ -47,7 +47,6 @@ const authController = {
     if (!user) {
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
-    next();
     res.status(200).json(user);
   },
 

@@ -44,7 +44,7 @@ app.use(
   })
 );
 
-// store.sync();
+store.sync();
 
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
