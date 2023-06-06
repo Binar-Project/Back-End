@@ -43,6 +43,7 @@ const authController = {
     } else {
       // Cookie tidak tersedia, berikan respons atau tindakan lain yang sesuai
       res.status(401).json({ message: "Cookie tidak tersedia" });
+    }
 
     const user = await User.findOne({
       attributes: ["id_user", "username", "email", "role"],
