@@ -40,7 +40,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: "false",
-      httpOnly: "false",
+      httpOnly: "true",
     },
   })
 );

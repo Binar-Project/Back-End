@@ -21,7 +21,8 @@ const authController = {
         return res.status(400).json({ message: "Password salah" });
       }
       // set session
-      req.session.userId = user.id_user;
+
+      req.session.userId = await user.id_user;
       const id_user = user.id_user;
       const username = user.username;
       const email = user.email;
@@ -35,20 +36,28 @@ const authController = {
 
   Dashboard: async (req, res) => {
     if (req.session && req.session.userId) {
-      // Cookie tersedia, lakukan tindakan yang diperlukan
-      const user = await User.findOne({
-        attributes: ["id_user", "username", "email", "role"],
-        where: {
-          id_user: req.session.userId,
-        },
-      });
-      if (!user) {
-        return res.status(404).json({ message: "User tidak ditemukan" });
-      }
-      res.status(200).json(user);
+      // Cookie tersedia dan pengguna telah terotentikasi
+      const userId = req.session.userId;
+
+      // Lakukan logika pengambilan data pengguna dari database
+      // Contoh pengambilan data pengguna dengan memanfaatkan model User
+      User.findOne({ _id: userId })
+        .then((user) => {
+          if (!user) {
+            return res
+              .status(404)
+              .json({ message: "Pengguna tidak ditemukan" });
+          }
+          res.status(200).json(user);
+        })
+        .catch((error) => {
+          res.status(500).json({ message: "Terjadi kesalahan pada server" });
+        });
     } else {
-      // Cookie tidak tersedia, berikan respons atau tindakan lain yang sesuai
-      res.status(401).json({ message: "Mohon Login ke akun anda" });
+      // Cookie tidak tersedia atau pengguna belum terotentikasi
+      res
+        .status(401)
+        .json({ message: "Mohon login untuk mengakses dashboard" });
     }
   },
 
