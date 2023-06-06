@@ -22,7 +22,7 @@ app.use(morgan("dev"));
 app.use(
   cors({
     credentials: true,
-    origin: true,
+    origin: "*",
   })
 );
 app.use(bodyParser.json());
