@@ -158,6 +158,7 @@ const dashboardController = {
       const {
         title,
         desc,
+        img,
         date,
         time,
         start_registration,
@@ -166,13 +167,6 @@ const dashboardController = {
         price,
         link_registration,
       } = req.body;
-
-      const img = req.file.path;
-
-
-      if (!img) {
-        return res.status(400).json({ message: "Gambar event harus diisi" });
-      }
 
       if (title.length < 6) {
         return res.status(400).json({ message: "Judul minimal 6 karakter" });
@@ -187,7 +181,7 @@ const dashboardController = {
       const event = await Event.create({
         title,
         desc,
-        img: req.file.path,
+        img,
         date,
         time,
         start_registration,
