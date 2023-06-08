@@ -24,9 +24,6 @@ const Event = sequelize.define(
     img: {
       type: DataTypes.STRING,
       allowNull: true,
-      get() {
-        const image = this.getDataValue("img");
-        return "/img/" + image;
       },
     },
     date: {
