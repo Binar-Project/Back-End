@@ -24,7 +24,6 @@ const Event = sequelize.define(
     img: {
       type: DataTypes.STRING,
       allowNull: true,
-      },
     },
     date: {
       type: DataTypes.DATEONLY,
