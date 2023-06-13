@@ -2,8 +2,8 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../database/database");
 const Users = require("./userModel");
 
-const Event = sequelize.define(
-  "Event",
+const Events = sequelize.define(
+  "Events",
   {
     id_event: {
       type: DataTypes.STRING,
@@ -64,7 +64,7 @@ const Event = sequelize.define(
   }
 );
 
-Users.hasMany(Event);
-Event.belongsTo(Users);
+Users.hasMany(Events);
+Events.belongsTo(Users);
 
-module.exports = Event;
+module.exports = Events;

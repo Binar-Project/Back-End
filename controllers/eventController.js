@@ -1,5 +1,6 @@
 const { Event } = require("../config/model/index");
 const { Op } = require("sequelize");
+const { User } = require("../config/model/index");
 
 const eventController = {
   getAllEventsGuest: async (req, res) => {
@@ -45,6 +46,12 @@ const eventController = {
         where: {
           id_event: req.params.id,
         },
+        include: [
+          {
+            model: User,
+            attributes: ["username"],
+          },
+        ],
       });
       if (!response) {
         res.status(404).json({ message: "Event tidak ditemukan" });
@@ -77,7 +84,6 @@ const eventController = {
       res.status(500).json({ message: "Server error" });
     }
   },
-
 };
 
 module.exports = eventController;

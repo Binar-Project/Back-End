@@ -20,15 +20,13 @@ const authController = {
       if (!match) {
         return res.status(400).json({ message: "Password salah" });
       }
-      
+
       // set session
       req.session.userId = user.id_user;
       const id_user = user.id_user;
       const username = user.username;
       const email = user.email;
       const role = user.role;
-
-      req.session.save();
 
       res.status(200).json({ id_user, username, email, role });
     } catch (error) {
@@ -62,6 +60,9 @@ const authController = {
   },
 
   Logout: async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: "Anda belum Login" });
+    }
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).json({ message: "Logout gagal" });

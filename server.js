@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 
 require("dotenv").config();
 const dashboardRoutes = require("./routes/dashboardRoute");
@@ -23,18 +24,15 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:3000",
     credentials: true,
-    exposedHeaders: "Set-Cookie",
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: "Content-Type, Authorization",
   })
 );
 
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use("/assets", express.static("assets"));
+app.use(express.static(path.join(__dirname, "uploads")));
 
 app.use(
   session({
@@ -43,13 +41,13 @@ app.use(
     store: store,
     saveUninitialized: false,
     cookie: {
-      sameSite: "none",
-      secure: true,
+      httpOnly: false,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })
 );
 
-store.sync();
+// store.sync();
 
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);

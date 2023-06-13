@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { Event, User } = require("../config/model/index");
-const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
 
 const dashboardController = {
   getAllEvents: async (req, res) => {
@@ -15,48 +16,56 @@ const dashboardController = {
             },
           ],
         });
-      } else {
+      } else if (req.role === "user") {
         response = await Event.findAll({
-          attributes: [
-            "id_event",
-            "title",
-            "desc",
-            "img",
-            "date",
-            "time",
-            "start_registration",
-            "end_registration",
-            "location",
-            "price",
-            "link_registration",
-          ],
           where: {
             UserId: req.userId,
           },
-          include: [
-            {
-              model: User,
-              attributes: ["username", "email"],
-            },
-          ],
         });
+      } else {
+        response = await Event.findAll((exclude = ["UserId,"]));
       }
+
+      response = response.map((event) => {
+        event.img = req.protocol + "://" + req.get("host") + "/" + event.img;
+        return event;
+      });
+
       res.status(200).json(response);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   },
 
+  getImage: async (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, "images", filename);
+
+    // Mengecek apakah file ada atau tidak
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        // Jika file tidak ada, kirim respon error
+        res.status(404).json({ message: "File not found" });
+      } else {
+        // Jika file ada, kirim file sebagai respons
+        res.sendFile(filePath);
+      }
+    });
+  },
+
   getEventById: async (req, res) => {
     try {
+      const eventId = req.params.id;
       const event = await Event.findOne({
         where: {
-          id_event: req.params.id,
+          id_event: eventId,
         },
       });
+
       if (!event) {
         return res.status(404).json({ message: "Event tidak ditemukan" });
       }
+
       let response;
       if (req.role === "admin") {
         response = await Event.findOne({
@@ -71,7 +80,7 @@ const dashboardController = {
           ],
         });
       } else if (req.role === "user") {
-        if (req.userId !== event.userId) {
+        if (req.userId !== event.UserId) {
           return res.status(403).json({ message: "Anda tidak memiliki akses" });
         }
         response = await Event.findOne({
@@ -89,7 +98,7 @@ const dashboardController = {
             "link_registration",
           ],
           where: {
-            [Op.and]: [{ id: event.id }, { userId: req.userId }],
+            [Op.and]: [{ id: event.id }, { UserId: req.userId }],
           },
           include: [
             {
@@ -105,7 +114,14 @@ const dashboardController = {
           },
         });
       }
-      res.status(200).json(response);
+
+      if (response) {
+        response.img =
+          req.protocol + "://" + req.get("host") + "/" + response.img;
+        res.status(200).json(response);
+      } else {
+        res.status(404).json({ message: "Event tidak ditemukan" });
+      }
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -155,45 +171,87 @@ const dashboardController = {
 
   createEvent: async (req, res) => {
     try {
-      const {
-        title,
-        desc,
-        img,
-        date,
-        time,
-        start_registration,
-        end_registration,
-        location,
-        price,
-        link_registration,
-      } = req.body;
+      const errors = [];
 
-      if (title.length < 6) {
-        return res.status(400).json({ message: "Judul minimal 6 karakter" });
+      if (!req.body.title) {
+        errors.push({ message: "Mohon isi judul acara" });
       }
 
-      if (desc.length < 100) {
-        return res
-          .status(400)
-          .json({ message: "Deskripsi minimal 100 karakter" });
+      if (!req.body.desc) {
+        errors.push({ message: "Mohon isi deskripsi acara" });
       }
 
-      const event = await Event.create({
-        title,
-        desc,
-        img,
-        date,
-        time,
-        start_registration,
-        end_registration,
-        location,
-        price,
-        link_registration,
+      if (!req.file) {
+        errors.push({ message: "Mohon upload gambar acara" });
+      } else {
+        // Validasi format file gambar menggunakan regex
+        const imgRegex = /\.(jpg|jpeg|png|gif|svg)$/i;
+        if (!imgRegex.test(req.file.originalname)) {
+          errors.push({ message: "Format file gambar tidak valid" });
+          fs.unlinkSync(req.file.path);
+        }
+      }
+
+      if (req.body.date > new Date()) {
+        errors.push({ message: "Tanggal acara tidak valid" });
+      }
+
+      if (
+        req.body.start_registration > req.body.end_registration ||
+        req.body.start_registration > req.body.date
+      ) {
+        errors.push({ message: "Tanggal pendaftaran tidak valid" });
+      }
+
+      if (req.body.link_registration === "") {
+        errors.push({ message: "Mohon isi link pendaftaran" });
+      } else {
+        // Validasi format link pendaftaran menggunakan regex
+        const linkRegex = /^(ftp|http|https):\/\/[^ "]+(\.[^ "]+)+$/;
+        if (!linkRegex.test(req.body.link_registration)) {
+          errors.push({ message: "Format link pendaftaran tidak valid" });
+        }
+      }
+
+      // Ambil data acara dari body request
+      const eventData = {
+        title: req.body.title,
+        desc: req.body.desc,
+        img: encodeURIComponent(req.file.filename),
+        date: req.body.date,
+        time: req.body.time,
+        start_registration: req.body.start_registration,
+        end_registration: req.body.end_registration,
+        location: req.body.location,
+        price: req.body.price,
+        link_registration: req.body.link_registration,
         UserId: req.userId,
-      });
-      res.status(201).json({ message: "Event berhasil dibuat", data: event });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+      };
+
+      // Simpan data acara ke database
+      const createdEvent = await Event.create(eventData);
+
+      if (errors.length > 0) {
+        return res.status(400).json({ error: errors[0].message });
+      }
+
+      // Jika acara berhasil dibuat
+      if (createdEvent) {
+        const imgPath = createdEvent.img.replace(/\\/g, " ");
+
+        // Mengupdate nilai properti 'img' dengan path yang sudah diperbaiki
+        createdEvent.img = imgPath;
+
+        // Mengirimkan respons dengan objek acara yang sudah diperbaiki
+        res.status(201).json(createdEvent);
+      } else {
+        // Jika acara gagal dibuat
+        res.status(500).json({ error: "Gagal menambahkan event" });
+      }
+    } catch (errors) {
+      // Jika terjadi kesalahan dalam menyimpan data acara ke database
+      console.error("Gagal menambahkan event:", errors[0].message);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 
@@ -206,10 +264,10 @@ const dashboardController = {
       });
       if (!event)
         return res.status(404).json({ message: "Event tidak ditemukan" });
+
       const {
         title,
         desc,
-        img,
         date,
         time,
         start_registration,
@@ -219,69 +277,40 @@ const dashboardController = {
         link_registration,
       } = req.body;
 
+      const eventData = {
+        title: title !== undefined ? title : event.title,
+        desc: desc !== undefined ? desc : event.desc,
+        img:
+          req.file !== undefined
+            ? encodeURIComponent(req.file.filename)
+            : event.img,
+        date: date !== undefined ? date : event.date,
+        time: time !== undefined ? time : event.time,
+        start_registration:
+          start_registration !== undefined
+            ? start_registration
+            : event.start_registration,
+        end_registration:
+          end_registration !== undefined
+            ? end_registration
+            : event.end_registration,
+        location: location !== undefined ? location : event.location,
+        price: price !== undefined ? price : event.price,
+        link_registration:
+          link_registration !== undefined
+            ? link_registration
+            : event.link_registration,
+      };
+
       if (req.role === "admin") {
-        await event.update(
-          {
-            title: title !== undefined ? title : event.title,
-            desc: desc !== undefined ? desc : event.desc,
-            img: img !== undefined ? img : event.img,
-            date: date !== undefined ? date : event.date,
-            time: time !== undefined ? time : event.time,
-            start_registration:
-              start_registration !== undefined
-                ? start_registration
-                : event.start_registration,
-            end_registration:
-              end_registration !== undefined
-                ? end_registration
-                : event.end_registration,
-            location: location !== undefined ? location : event.location,
-            price: price !== undefined ? price : event.price,
-            link_registration:
-              link_registration !== undefined
-                ? link_registration
-                : event.link_registration,
-          },
-          {
-            where: {
-              id: event.id,
-            },
-          }
-        );
+        await event.update(eventData);
       } else if (req.role === "user") {
         if (req.userId !== event.userId) {
           return res.status(403).json({ message: "Anda tidak memiliki akses" });
         }
-        await event.update(
-          {
-            title: title !== undefined ? title : event.title,
-            desc: desc !== undefined ? desc : event.desc,
-            img: img !== undefined ? img : event.img,
-            date: date !== undefined ? date : event.date,
-            time: time !== undefined ? time : event.time,
-            start_registration:
-              start_registration !== undefined
-                ? start_registration
-                : event.start_registration,
-            end_registration:
-              end_registration !== undefined
-                ? end_registration
-                : event.end_registration,
-            location: location !== undefined ? location : event.location,
-            price: price !== undefined ? price : event.price,
-            link_registration:
-              link_registration !== undefined
-                ? link_registration
-                : event.link_registration,
-          },
-          {
-            where: {
-              [Op.and]: [{ id: event.id }, { userId: req.userId }],
-            },
-          }
-        );
+        await event.update(eventData);
       }
-      res.status(201).json({ message: "Event berhasil diupdate", data: event });
+      res.status(200).json({ message: "Event berhasil diupdate", data: event });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -317,6 +346,23 @@ const dashboardController = {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
+  },
+
+  test: async (req, res) => {
+    Event.findAll({
+      include: [Users],
+    })
+      .then((events) => {
+        // Tampilkan data acara dan pengguna terkait
+        events.forEach((event) => {
+          console.log("Acara:", event.title);
+          console.log("Pengguna:", event.User.username);
+          console.log("---");
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   },
 };
 
