@@ -40,10 +40,7 @@ app.use(
     store: store,
     resave: false,
     cookie: {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-      maxAge: 24 * 60 * 60 * 1000,
+      secure: auto,
     },
   })
 );
