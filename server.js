@@ -40,7 +40,7 @@ app.use(
     store: store,
     resave: false,
     cookie: {
-      secure: auto,
+      secure: true,
     },
   })
 );
