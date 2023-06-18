@@ -20,6 +20,17 @@ const store = new sessionStore({
   db: sequelize,
 });
 
+app.use(
+  session({
+    secret: process.env.SESS_SECRET,
+    store: store,
+    resave: false,
+    cookie: {
+      secure: false,
+    },
+  })
+);
+
 app.use(morgan("dev"));
 
 app.use(
@@ -33,17 +44,6 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "uploads")));
-
-app.use(
-  session({
-    secret: process.env.SESS_SECRET,
-    store: store,
-    resave: false,
-    cookie: {
-      secure: true,
-    },
-  })
-);
 
 // store.sync();
 
