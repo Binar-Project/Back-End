@@ -129,7 +129,6 @@ const dashboardController = {
 
   createEvent: async (req, res) => {
     try {
-      
       // Ambil data acara dari body request
       const eventData = {
         title: req.body.title,
