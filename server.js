@@ -38,6 +38,7 @@ app.use(
   session({
     secret: process.env.SESS_SECRET,
     store: store,
+    resave: false,
     cookie: {
       httpOnly: true,
       sameSite: "none",
