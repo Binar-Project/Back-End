@@ -127,48 +127,6 @@ const dashboardController = {
     }
   },
 
-  searchEvents: async (req, res) => {
-    try {
-      const { search } = req.query;
-      const events = await Event.findAll({
-        where: {
-          [Op.or]: [
-            { title: { [Op.substring]: search } },
-            { description: { [Op.substring]: search } },
-          ],
-        },
-      });
-      res.status(201).json(events);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error" });
-    }
-  },
-
-  filterEvents: async (req, res) => {
-    try {
-      const { free, paid } = req.query;
-      let events;
-
-      if (free === "1" && paid === "0") {
-        events = await Event.findAll({
-          where: { price: 0 },
-        });
-      } else if (paid === "1" && free === "0") {
-        events = await Event.findAll({
-          where: { price: { [Op.ne]: 0 } },
-        });
-      } else {
-        events = await Event.findAll();
-      }
-
-      res.status(201).json(events);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error" });
-    }
-  },
-
   createEvent: async (req, res) => {
     try {
       const errors = [];
@@ -346,23 +304,6 @@ const dashboardController = {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  },
-
-  test: async (req, res) => {
-    Event.findAll({
-      include: [Users],
-    })
-      .then((events) => {
-        // Tampilkan data acara dan pengguna terkait
-        events.forEach((event) => {
-          console.log("Acara:", event.title);
-          console.log("Pengguna:", event.User.username);
-          console.log("---");
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   },
 };
 

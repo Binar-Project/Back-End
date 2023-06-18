@@ -23,6 +23,5 @@ router.post("/upload", upload.single("img"), dashboard.createEvent);
 router.patch("/:id", verifyUser, dashboard.updateEvent);
 router.delete("/:id", verifyUser, dashboard.deleteEvent);
 router.get("/:filename", dashboard.getImage);
-router.get("/test", dashboard.test);
 
 module.exports = router;
