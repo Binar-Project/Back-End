@@ -24,7 +24,7 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: "*",
+    origin: "https",
     credentials: true,
   })
 );
@@ -41,15 +41,15 @@ app.use(
     store: store,
     saveUninitialized: false,
     cookie: {
-      httpOnly: false,
+      httpOnly: true,
       sameSite: "none",
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
 
-// store.sync();
+store.sync();
 
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
