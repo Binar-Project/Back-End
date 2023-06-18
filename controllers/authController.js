@@ -37,21 +37,16 @@ const authController = {
 
   Dashboard: async (req, res) => {
     try {
-      const userId = req.session.userId;
-
-      if (!userId) {
-        return res.status(401).json({ message: "Mohon login ke akun Anda" });
+      if (!req.session.userId) {
+        return res.status(401).json({ message: "Anda belum Login" });
       }
 
       const user = await User.findOne({
         attributes: ["id_user", "username", "email", "role"],
         where: {
-          id_user: userId,
+          id_user: req.session.userId,
         },
       });
-      if (!user) {
-        return res.status(404).json({ message: "User tidak ditemukan" });
-      }
       res.status(200).json(user);
     } catch (error) {
       console.error(error);
