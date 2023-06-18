@@ -129,48 +129,7 @@ const dashboardController = {
 
   createEvent: async (req, res) => {
     try {
-      const errors = [];
-
-      if (!req.body.title) {
-        errors.push({ message: "Mohon isi judul acara" });
-      }
-
-      if (!req.body.desc) {
-        errors.push({ message: "Mohon isi deskripsi acara" });
-      }
-
-      if (!req.file) {
-        errors.push({ message: "Mohon upload gambar acara" });
-      } else {
-        // Validasi format file gambar menggunakan regex
-        const imgRegex = /\.(jpg|jpeg|png|gif|svg)$/i;
-        if (!imgRegex.test(req.file.originalname)) {
-          errors.push({ message: "Format file gambar tidak valid" });
-          fs.unlinkSync(req.file.path);
-        }
-      }
-
-      if (req.body.date > new Date()) {
-        errors.push({ message: "Tanggal acara tidak valid" });
-      }
-
-      if (
-        req.body.start_registration > req.body.end_registration ||
-        req.body.start_registration > req.body.date
-      ) {
-        errors.push({ message: "Tanggal pendaftaran tidak valid" });
-      }
-
-      if (req.body.link_registration === "") {
-        errors.push({ message: "Mohon isi link pendaftaran" });
-      } else {
-        // Validasi format link pendaftaran menggunakan regex
-        const linkRegex = /^(ftp|http|https):\/\/[^ "]+(\.[^ "]+)+$/;
-        if (!linkRegex.test(req.body.link_registration)) {
-          errors.push({ message: "Format link pendaftaran tidak valid" });
-        }
-      }
-
+      
       // Ambil data acara dari body request
       const eventData = {
         title: req.body.title,
