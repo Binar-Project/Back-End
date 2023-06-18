@@ -24,7 +24,7 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: "http://localhost:3000/",
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -49,7 +49,7 @@ app.use(
   })
 );
 
-store.sync();
+// store.sync();
 
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
