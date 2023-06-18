@@ -19,7 +19,7 @@ const upload = multer({
 
 router.get("/", verifyUser, dashboard.getAllEvents);
 router.get("/:id", verifyUser, dashboard.getEventById);
-router.post("/upload", verifyUser, upload.single("img"), dashboard.createEvent);
+router.post("/upload", upload.single("img"), dashboard.createEvent);
 router.patch("/:id", verifyUser, dashboard.updateEvent);
 router.delete("/:id", verifyUser, dashboard.deleteEvent);
 router.get("/:filename", dashboard.getImage);

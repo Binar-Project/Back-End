@@ -28,7 +28,7 @@ const authController = {
       const email = user.email;
       const role = user.role;
 
-      res.status(200).json({ id_user, username, email, role });
+      res.status(200).json(req.session.userId);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Gagal melakukan login" });
