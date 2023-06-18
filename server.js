@@ -37,9 +37,7 @@ app.use(express.static(path.join(__dirname, "uploads")));
 app.use(
   session({
     secret: process.env.SESS_SECRET,
-    resave: false,
     store: store,
-    saveUninitialized: false,
     cookie: {
       httpOnly: true,
       sameSite: "none",
