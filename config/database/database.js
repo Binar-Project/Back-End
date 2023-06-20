@@ -12,22 +12,22 @@ const sequelize = new Sequelize(
   }
 );
 
-// sequelize
-//   .authenticate()
-//   .then(() => {
-//     console.log("Connected to MySQL database!");
-//   })
-//   .catch((error) => {
-//     console.error("Error connecting to MySQL:", error);
-//   });
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connected to MySQL database!");
+  })
+  .catch((error) => {
+    console.error("Error connecting to MySQL:", error);
+  });
 
-// (async () => {
-//   try {
-//     await sequelize.sync();
-//     console.log("All models were synchronized successfully.");
-//   } catch (error) {
-//     console.error("Error synchronizing models:", error);
-//   }
-// })();
+(async () => {
+  try {
+    await sequelize.sync();
+    console.log("All models were synchronized successfully.");
+  } catch (error) {
+    console.error("Error synchronizing models:", error);
+  }
+})();
 
 module.exports = sequelize;
