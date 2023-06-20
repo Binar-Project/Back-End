@@ -1,3 +1,5 @@
+const { User } = require("../config/model/index");
+
 const verifyUser = async (req, res, next) => {
   try {
     if (!req.session.userId) {
@@ -16,7 +18,9 @@ const verifyUser = async (req, res, next) => {
     next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Terjadi kesalahan dalam verifikasi pengguna" });
+    res
+      .status(500)
+      .json({ message: "Terjadi kesalahan dalam verifikasi pengguna" });
   }
 };
 
@@ -36,7 +40,9 @@ const verifyAdmin = async (req, res, next) => {
     next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Terjadi kesalahan dalam verifikasi pengguna" });
+    res
+      .status(500)
+      .json({ message: "Terjadi kesalahan dalam verifikasi pengguna" });
   }
 };
 
