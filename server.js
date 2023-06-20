@@ -48,6 +48,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "uploads")));
 
 // store.sync();
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
