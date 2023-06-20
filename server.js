@@ -49,9 +49,9 @@ app.use(express.static(path.join(__dirname, "uploads")));
 
 // store.sync();
 
+app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);
 app.use("/api/event", eventRoutes);
 
 app.listen(process.env.PORT || 7852, () => {
