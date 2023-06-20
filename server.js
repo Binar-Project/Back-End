@@ -19,6 +19,7 @@ const sessionStore = SequelizeStore(session.Store);
 const store = new sessionStore({
   db: sequelize,
 });
+app.use(cookieParser());
 
 app.use(
   session({
@@ -28,7 +29,6 @@ app.use(
     saveUninitialized: true,
     cookie: {
       secure: true,
-      sameSite: "none",
     },
   })
 );
@@ -42,7 +42,6 @@ app.use(
   })
 );
 
-app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "uploads")));
