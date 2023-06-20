@@ -47,7 +47,7 @@ const authController = {
           id_user: req.session.userId,
         },
       });
-      res.status(200).json(user);
+      res.status(200).json(req.session.userId, user);
     } catch (error) {
       res.status(500).json({ message: "Mohon login ke akun Anda" });
     }
