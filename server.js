@@ -19,7 +19,6 @@ const sessionStore = SequelizeStore(session.Store);
 const store = new sessionStore({
   db: sequelize,
 });
-app.use(cookieParser());
 
 app.use(
   session({
@@ -28,7 +27,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: true,
+      secure: false,
     },
   })
 );
@@ -37,11 +36,12 @@ app.use(morgan("dev"));
 
 app.use(
   cors({
-    origin: "https://react.achmadsyarif.com",
     credentials: true,
+    origin: "https://react.achmadsyarif.com",
   })
 );
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "uploads")));
