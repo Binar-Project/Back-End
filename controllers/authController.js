@@ -28,9 +28,7 @@ const authController = {
       const email = user.email;
       const role = user.role;
 
-      res
-        .status(200)
-        .json(req.session.userId, { id_user, username, email, role });
+      res.status(200).json({ id_user, username, email, role });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Gagal melakukan login" });
@@ -49,8 +47,9 @@ const authController = {
           id_user: req.session.userId,
         },
       });
-      res.status(200).json(req.session.userId, user);
+      res.status(200).json(user);
     } catch (error) {
+      console.error(error);
       res.status(500).json({ message: "Mohon login ke akun Anda" });
     }
   },
