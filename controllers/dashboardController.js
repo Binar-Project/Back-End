@@ -151,7 +151,10 @@ const dashboardController = {
       if (createdEvent) {
         const imgPath = createdEvent.img.replace(/\\/g, " ");
         // Mengupdate nilai properti 'img' dengan path yang sudah diperbaiki
-        createdEvent.img = imgPath;
+        const imgUrl =
+          req.protocol + "://" + req.get("host") + "/uploads/" + imgPath;
+
+        createdEvent.img = imgUrl;
 
         // Mengirimkan respons dengan objek acara yang sudah diperbaiki
         res.status(201).json(createdEvent);
