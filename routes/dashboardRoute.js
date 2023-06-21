@@ -17,11 +17,11 @@ const upload = multer({
   storage: storage,
 });
 
-router.get("/", verifyUser, dashboard.getAllEvents);
-router.get("/:id", verifyUser, dashboard.getEventById);
+router.get("/", verifyToken, verifyUser, dashboard.getAllEvents);
+router.get("/:id", verifyToken, verifyUser, dashboard.getEventById);
 router.post("/upload", upload.single("img"), dashboard.createEvent);
-router.patch("/:id", verifyUser, dashboard.updateEvent);
-router.delete("/:id", verifyUser, dashboard.deleteEvent);
+router.patch("/:id", verifyToken, verifyUser, dashboard.updateEvent);
+router.delete("/:id", verifyToken, verifyUser, dashboard.deleteEvent);
 router.get("/:filename", dashboard.getImage);
 
 module.exports = router;
