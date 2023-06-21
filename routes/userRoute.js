@@ -18,17 +18,11 @@ router.get(
   "/:id",
   verifyToken,
   verifyUser,
-  verifyAdmin,
+
   userController.getUserById
 );
 router.post("/", userController.createUser);
-router.patch(
-  "/:id",
-  verifyToken,
-  verifyUser,
-  verifyAdmin,
-  userController.updateUser
-);
+router.patch("/:id", verifyToken, verifyUser, userController.updateUser);
 router.delete(
   "/:id",
   verifyToken,
