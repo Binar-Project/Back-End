@@ -133,7 +133,7 @@ const dashboardController = {
       const eventData = {
         title: req.body.title,
         desc: req.body.desc,
-        img: encodeURIComponent(req.file.filename),
+        img: req.file.filename,
         date: req.body.date,
         time: req.body.time,
         start_registration: req.body.start_registration,
