@@ -134,6 +134,7 @@ const dashboardController = {
         title: req.body.title,
         desc: req.body.desc,
         img: req.file.filename,
+        // img: encodeURIComponent(req.file.filename),
         date: req.body.date,
         time: req.body.time,
         start_registration: req.body.start_registration,
@@ -151,7 +152,7 @@ const dashboardController = {
       if (createdEvent) {
         const imgPath = createdEvent.img.replace(/\\/g, " ");
         // Mengupdate nilai properti 'img' dengan path yang sudah diperbaiki
-  
+
         createdEvent.img = imgPath;
 
         // Mengirimkan respons dengan objek acara yang sudah diperbaiki
