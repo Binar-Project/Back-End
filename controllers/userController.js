@@ -4,7 +4,7 @@ const argon2 = require("argon2");
 const userController = {
   // GET ALL USERS
   getAllUsers: async (req, res) => {
-    try {
+    try {      
       let response;
       if (req.role === "admin") {
         response = await User.findAll({

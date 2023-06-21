@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const dashboard = require("../controllers/dashboardController");
-const verifyUser = require("../middleware/authUser");
+const { verifyToken, verifyUser } = require("../middleware/authUser");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
