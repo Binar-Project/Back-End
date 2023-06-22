@@ -18,7 +18,7 @@ app.use(morgan("dev"));
 app.use(
   cors({
     credentials: true,
-    origin: ["http://vent-us.com", "https://react.achmadsyarif.com"],
+    origin: ["https://vent-us.com", "https://react.achmadsyarif.com"],
   })
 );
 
