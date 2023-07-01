@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const dashboard = require("../controllers/dashboardController");
-const verifyUser = require("../middleware/authUser");
+const { verifyToken, verifyUser } = require("../middleware/authUser");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
@@ -17,11 +17,17 @@ const upload = multer({
   storage: storage,
 });
 
-router.get("/", verifyUser, dashboard.getAllEvents);
-router.get("/:id", verifyUser, dashboard.getEventById);
-router.post("/upload", upload.single("img"), dashboard.createEvent);
-router.patch("/:id", verifyUser, dashboard.updateEvent);
-router.delete("/:id", verifyUser, dashboard.deleteEvent);
+router.get("/", verifyToken, verifyUser, dashboard.getAllEvents);
+router.get("/:id", verifyToken, verifyUser, dashboard.getEventById);
+router.post(
+  "/upload",
+  verifyToken,
+  verifyUser,
+  upload.single("img"),
+  dashboard.createEvent
+);
+router.patch("/:id", verifyToken, verifyUser, dashboard.updateEvent);
+router.delete("/:id", verifyToken, verifyUser, dashboard.deleteEvent);
 router.get("/:filename", dashboard.getImage);
 
 module.exports = router;

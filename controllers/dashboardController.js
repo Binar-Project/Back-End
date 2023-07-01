@@ -39,7 +39,7 @@ const dashboardController = {
 
   getImage: async (req, res) => {
     const filename = req.params.filename;
-    const filePath = path.join(__dirname, "images", filename);
+    const filePath = path.join(__dirname, "uploads", filename);
 
     // Mengecek apakah file ada atau tidak
     fs.access(filePath, fs.constants.F_OK, (err) => {
@@ -133,7 +133,8 @@ const dashboardController = {
       const eventData = {
         title: req.body.title,
         desc: req.body.desc,
-        img: encodeURIComponent(req.file.filename),
+        img: req.file.filename,
+        // img: encodeURIComponent(req.file.filename),
         date: req.body.date,
         time: req.body.time,
         start_registration: req.body.start_registration,
@@ -147,15 +148,11 @@ const dashboardController = {
       // Simpan data acara ke database
       const createdEvent = await Event.create(eventData);
 
-      if (errors.length > 0) {
-        return res.status(400).json({ error: errors[0].message });
-      }
-
       // Jika acara berhasil dibuat
       if (createdEvent) {
         const imgPath = createdEvent.img.replace(/\\/g, " ");
-
         // Mengupdate nilai properti 'img' dengan path yang sudah diperbaiki
+
         createdEvent.img = imgPath;
 
         // Mengirimkan respons dengan objek acara yang sudah diperbaiki
@@ -166,8 +163,7 @@ const dashboardController = {
       }
     } catch (errors) {
       // Jika terjadi kesalahan dalam menyimpan data acara ke database
-      console.error("Gagal menambahkan event:", errors[0].message);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: errors.message });
     }
   },
 

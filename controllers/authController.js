@@ -1,5 +1,10 @@
+// authController.js
+
 const { User } = require("../config/model/index");
 const argon2 = require("argon2");
+const jwt = require("jsonwebtoken");
+
+const secretKey = process.env.JWT_SECRET;
 
 const authController = {
   Login: async (req, res) => {
@@ -15,20 +20,30 @@ const authController = {
           .status(404)
           .json({ message: "Email yang Anda masukkan salah" });
       }
+
       // validate password
       const match = await argon2.verify(user.password, req.body.password);
       if (!match) {
         return res.status(400).json({ message: "Password salah" });
       }
 
-      // set session
-      req.session.userId = user.id_user;
+      // Generate JWT token
+      var token = jwt.sign({ userId: user.id_user }, secretKey, {
+        expiresIn: 86400,
+      });
+
       const id_user = user.id_user;
       const username = user.username;
       const email = user.email;
       const role = user.role;
 
-      res.status(200).json({ id_user, username, email, role });
+      res.status(200).json({
+        id_user,
+        username,
+        email,
+        role,
+        token,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Gagal melakukan login" });
@@ -37,33 +52,24 @@ const authController = {
 
   Dashboard: async (req, res) => {
     try {
-      if (!req.session.userId) {
-        return res.status(401).json({ message: "Anda belum Login" });
-      }
+      const { userId } = req.userId;
 
       const user = await User.findOne({
         attributes: ["id_user", "username", "email", "role"],
         where: {
-          id_user: req.session.userId,
+          id_user: userId,
         },
       });
       res.status(200).json(user);
     } catch (error) {
-      console.error(error);
+      console.log(req.userId);
       res.status(500).json({ message: "Mohon login ke akun Anda" });
     }
   },
 
   Logout: async (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ message: "Anda belum Login" });
-    }
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Logout gagal" });
-      }
-      res.status(200).json({ message: "Logout berhasil" });
-    });
+    // Tidak perlu menghapus JWT token dari sisi server
+    res.status(200).json({ message: "Logout berhasil" });
   },
 };
 

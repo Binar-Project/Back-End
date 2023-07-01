@@ -2,8 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const session = require("express-session");
-const SequelizeStore = require("connect-session-sequelize");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 
@@ -12,42 +10,22 @@ const dashboardRoutes = require("./routes/dashboardRoute");
 const userRoutes = require("./routes/userRoute");
 const authRoutes = require("./routes/authRoute");
 const eventRoutes = require("./routes/eventRoute");
-const sequelize = require("./config/database/database");
 
 const app = express();
-const sessionStore = SequelizeStore(session.Store);
-const store = new sessionStore({
-  db: sequelize,
-});
-
-app.use(
-  session({
-    secret: process.env.SESS_SECRET,
-    store: store,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: true,
-      sameSite: "none",
-    },
-  })
-);
 
 app.use(morgan("dev"));
 
 app.use(
   cors({
     credentials: true,
-    origin: "https://react.achmadsyarif.com",
+    origin: ["https://vent-us.site", "https://admin.vent-us.site"],
   })
 );
 
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "uploads")));
-
-// store.sync();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
