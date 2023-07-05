@@ -110,9 +110,6 @@ const userController = {
       return res.status(400).json({ message: "Password tidak sama" });
     }
 
-    if (username == username.username) {
-      return res.status(400).json({ message: "Username sudah digunakan" });
-    }
 
     const checkDuplicate = async (field, value) => {
       const existingUser = await User.findOne({
@@ -127,7 +124,6 @@ const userController = {
 
     try {
       await checkDuplicate("username", username);
-      await checkDuplicate("email", email);
 
       await User.update(
         {
