@@ -19,6 +19,12 @@ const eventController = {
           "price",
           "link_registration",
         ],
+        include: [
+          {
+            model: User,
+            attributes: ["username"],
+          },
+        ],
       });
       res.status(201).json(events);
     } catch (error) {

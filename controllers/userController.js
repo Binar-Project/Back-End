@@ -1,10 +1,11 @@
 const { User } = require("../config/model/index");
-const argon2 = require("argon2");
+// const argon2 = require("argon2");
+// const bcrypt = require("bcrypt");
 
 const userController = {
   // GET ALL USERS
   getAllUsers: async (req, res) => {
-    try {      
+    try {
       let response;
       if (req.role === "admin") {
         response = await User.findAll({
@@ -64,7 +65,7 @@ const userController = {
       }
     };
 
-    const hashedPassword = await argon2.hash(password);
+    // const hashedPassword = await bcrypt.hash(password);
     try {
       await checkDuplicate("username", username);
       await checkDuplicate("email", email);
@@ -72,7 +73,7 @@ const userController = {
       await User.create({
         username: username,
         email: email,
-        password: hashedPassword,
+        password: password,
       });
       res.status(201).json({ message: "Registrasi berhasil" });
     } catch (error) {
@@ -94,15 +95,15 @@ const userController = {
 
     const { username, email, password, confirmPassword } = req.body;
 
-    let hashedPassword;
-    if (password === "" || password === null) {
-      hashedPassword = user.password;
-    } else {
-      hashedPassword = await argon2.hash(password);
-    }
+    // let hashedPassword;
+    // if (password === "" || password === null) {
+    //   hashedPassword = user.password;
+    // } else {
+    //   hashedPassword = await bcrypt.hash(password);
+    // }
 
     if (password !== confirmPassword) {
-      return res.status(400 ).json({ message: "Password tidak sama" });
+      return res.status(400).json({ message: "Password tidak sama" });
     }
 
     try {
@@ -110,7 +111,7 @@ const userController = {
         {
           username: username,
           email: email,
-          password: hashedPassword,
+          password: password,
         },
         {
           where: {

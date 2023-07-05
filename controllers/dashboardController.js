@@ -38,7 +38,7 @@ const dashboardController = {
   },
 
   getImage: async (req, res) => {
-    const filename = req.params.filename;
+    const filename = encodeURIComponent(req.params.filename);
     const filePath = path.join(__dirname, "uploads", filename);
 
     // Mengecek apakah file ada atau tidak
@@ -133,8 +133,8 @@ const dashboardController = {
       const eventData = {
         title: req.body.title,
         desc: req.body.desc,
-        img: req.file.filename,
-        // img: encodeURIComponent(req.file.filename),
+        // img: req.file.filename,
+        img: encodeURIComponent(req.file.filename),
         date: req.body.date,
         time: req.body.time,
         start_registration: req.body.start_registration,
@@ -142,9 +142,20 @@ const dashboardController = {
         location: req.body.location,
         price: req.body.price,
         link_registration: req.body.link_registration,
-        UserId: req.userId,
+        // UserId: req.userId,
       };
 
+      const { userId } = req.userId;
+
+      const user = await User.findOne({
+        where: {
+          id_user: userId,
+        },
+      });
+
+      if (user) {
+        eventData.UserId = user.id;
+      }
       // Simpan data acara ke database
       const createdEvent = await Event.create(eventData);
 
@@ -163,7 +174,9 @@ const dashboardController = {
       }
     } catch (errors) {
       // Jika terjadi kesalahan dalam menyimpan data acara ke database
-      res.status(500).json({ error: errors.message });
+      res
+        .status(500)
+        .json({ error: errors.message, UserId: req.userId, cek: user.id });
     }
   },
 

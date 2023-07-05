@@ -1,7 +1,8 @@
 // authController.js
 
 const { User } = require("../config/model/index");
-const argon2 = require("argon2");
+// const argon2 = require("argon2");
+// const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const secretKey = process.env.JWT_SECRET;
@@ -22,8 +23,12 @@ const authController = {
       }
 
       // validate password
-      const match = await argon2.verify(user.password, req.body.password);
-      if (!match) {
+      // const match = await bcrypt.compare(user.password, req.body.password);
+      // if (!match) {
+      //   return res.status(400).json({ message: "Password salah" });
+      // }
+
+      if (user.password !== req.body.password) {
         return res.status(400).json({ message: "Password salah" });
       }
 
