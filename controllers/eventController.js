@@ -26,11 +26,33 @@ const eventController = {
           },
         ],
       });
-      res.status(201).json(events);
+
+      const response = events.map((event) => {
+        event.img = req.protocol + "://" + req.get("host") + "/" + event.img;
+        return event;
+      });
+
+      res.status(201).json(response);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error" });
     }
+  },
+
+  getImage: async (req, res) => {
+    const filename = encodeURIComponent(req.params.filename);
+    const filePath = path.join(__dirname, "uploads", filename);
+
+    // Mengecek apakah file ada atau tidak
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        // Jika file tidak ada, kirim respon error
+        res.status(404).json({ message: "File not found" });
+      } else {
+        // Jika file ada, kirim file sebagai respons
+        res.sendFile(filePath);
+      }
+    });
   },
 
   getEventByIdGuest: async (req, res) => {
@@ -62,6 +84,7 @@ const eventController = {
       if (!response) {
         res.status(404).json({ message: "Event tidak ditemukan" });
       } else {
+        response.img = req.protocol + "://" + req.get("host") + "/" + event.img;
         res.status(201).json(response);
       }
     } catch (error) {
