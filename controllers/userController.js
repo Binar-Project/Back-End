@@ -102,11 +102,33 @@ const userController = {
     //   hashedPassword = await bcrypt.hash(password);
     // }
 
+    if (username.length < 6) {
+      return res.status(400).json({ message: "Username minimal 6 karakter" });
+    }
+
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Password tidak sama" });
     }
 
+    if (username == username.username) {
+      return res.status(400).json({ message: "Username sudah digunakan" });
+    }
+
+    const checkDuplicate = async (field, value) => {
+      const existingUser = await User.findOne({
+        where: {
+          [field]: value,
+        },
+      });
+      if (existingUser) {
+        throw new Error(`${field} sudah digunakan`);
+      }
+    };
+
     try {
+      await checkDuplicate("username", username);
+      await checkDuplicate("email", email);
+
       await User.update(
         {
           username: username,

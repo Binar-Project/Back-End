@@ -5,6 +5,14 @@ const path = require("path");
 
 const dashboardController = {
   getAllEvents: async (req, res) => {
+    const { userId } = req.userId;
+
+    const user = await User.findOne({
+      where: {
+        id_user: userId,
+      },
+    });
+
     try {
       let response;
       if (req.role === "admin") {
@@ -19,8 +27,14 @@ const dashboardController = {
       } else if (req.role === "user") {
         response = await Event.findAll({
           where: {
-            UserId: req.userId,
+            UserId: user.id,
           },
+          include: [
+            {
+              model: User,
+              attributes: ["username"],
+            },
+          ],
         });
       } else {
         response = await Event.findAll((exclude = ["UserId,"]));
@@ -54,6 +68,14 @@ const dashboardController = {
   },
 
   getEventById: async (req, res) => {
+    const { userId } = req.userId;
+
+    const user = await User.findOne({
+      where: {
+        id_user: userId,
+      },
+    });
+
     try {
       const eventId = req.params.id;
       const event = await Event.findOne({
@@ -80,7 +102,7 @@ const dashboardController = {
           ],
         });
       } else if (req.role === "user") {
-        if (req.userId !== event.UserId) {
+        if (user.id !== event.UserId) {
           return res.status(403).json({ message: "Anda tidak memiliki akses" });
         }
         response = await Event.findOne({
@@ -98,7 +120,7 @@ const dashboardController = {
             "link_registration",
           ],
           where: {
-            [Op.and]: [{ id: event.id }, { UserId: req.userId }],
+            [Op.and]: [{ id: event.id }, { UserId: user.id }],
           },
           include: [
             {
@@ -174,13 +196,19 @@ const dashboardController = {
       }
     } catch (errors) {
       // Jika terjadi kesalahan dalam menyimpan data acara ke database
-      res
-        .status(500)
-        .json({ error: errors.message, UserId: req.userId, cek: user.id });
+      res.status(500).json({ error: errors.message });
     }
   },
 
   updateEvent: async (req, res) => {
+    const { userId } = req.userId;
+
+    const user = await User.findOne({
+      where: {
+        id_user: userId,
+      },
+    });
+
     try {
       const event = await Event.findOne({
         where: {
@@ -230,7 +258,7 @@ const dashboardController = {
       if (req.role === "admin") {
         await event.update(eventData);
       } else if (req.role === "user") {
-        if (req.userId !== event.userId) {
+        if (user.id !== event.userId) {
           return res.status(403).json({ message: "Anda tidak memiliki akses" });
         }
         await event.update(eventData);
@@ -242,6 +270,14 @@ const dashboardController = {
   },
 
   deleteEvent: async (req, res) => {
+    const { userId } = req.userId;
+
+    const user = await User.findOne({
+      where: {
+        id_user: userId,
+      },
+    });
+
     try {
       const event = await Event.findOne({
         where: {
@@ -258,12 +294,12 @@ const dashboardController = {
           },
         });
       } else {
-        if (req.userId !== event.userId) {
+        if (user.id !== event.userId) {
           return res.status(403).json({ message: "Anda tidak memiliki akses" });
         }
         await Event.destroy({
           where: {
-            [Op.and]: [{ id: event.id }, { userId: req.userId }],
+            [Op.and]: [{ id: event.id }, { userId: user.id }],
           },
         });
       }
